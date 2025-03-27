@@ -5,8 +5,18 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    Fira Sans,
+    Droid Sans,
+    Helvetica Neue,
+    sans-serif;
   background-color: #f5f5f5;
   color: #333;
 }
@@ -133,8 +143,6 @@ body {
   color: #666;
 }
 
-/* Add these styles to your globals.css file */
-
 .document-viewer {
   background-color: white;
   border-radius: 8px;
@@ -217,7 +225,8 @@ body {
   border-right: 1px solid #ddd;
 }
 
-.original-panel, .analyzed-panel {
+.original-panel,
+.analyzed-panel {
   height: 100%;
   overflow: auto;
   padding: 1rem;
@@ -270,25 +279,232 @@ body {
   line-height: 1.6;
 }
 
+/* Risk statement styling with clause indication */
 .risk-statement {
   position: relative;
   color: red;
   font-weight: 500;
   cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-decoration-color: red;
 }
 
+.risk-statement.has-clause {
+  border-left: 3px solid #ff6b6b;
+  padding-left: 4px;
+  background-color: rgba(255, 107, 107, 0.05);
+}
+
+/* Enhanced tooltip styling */
 .risk-tooltip {
   position: absolute;
   top: 100%;
   left: 0;
   background-color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
   padding: 1rem;
-  width: 300px;
+  width: 350px;
   z-index: 10;
   font-weight: normal;
   color: #333;
   text-align: left;
+  border-top: 4px solid #ff6b6b;
 }
 
+.risk-tooltip h4 {
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.risk-tooltip p {
+  font-size: 0.9rem;
+  margin-bottom: 0.8rem;
+}
+
+/* Clause information styling */
+.clause-info {
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.8rem;
+  border-left: 3px solid #4dabf7;
+}
+
+.clause-info h4 {
+  color: #1971c2;
+  margin-bottom: 0.2rem;
+}
+
+/* Rewrite section styling */
+.rewrite {
+  background-color: #f1f8e9;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-top: 0.8rem;
+  border-left: 3px solid #7cb342;
+}
+
+.rewrite h4 {
+  color: #558b2f;
+}
+
+.rewrite-text {
+  font-style: italic;
+}
+
+.apply-rewrite-btn {
+  background-color: #7cb342;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.apply-rewrite-btn:hover {
+  background-color: #558b2f;
+}
+
+/* Applied rewrites section */
+.rewritten-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #ccc;
+}
+
+.rewritten-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #558b2f;
+}
+
+.rewritten-item {
+  margin-bottom: 1rem;
+  padding: 0.8rem;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  position: relative;
+}
+
+.rewritten-item .original {
+  color: #d32f2f;
+  text-decoration: line-through;
+  margin-bottom: 0.5rem;
+}
+
+.rewritten-item .new-text {
+  color: #2e7d32;
+}
+
+/* Severity level styling in tooltip */
+.level-low {
+  color: #2e7d32;
+  background-color: #e8f5e9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.level-medium {
+  color: #ef6c00;
+  background-color: #fff3e0;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.level-high {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+/* Toolbar layout changes */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #f0f0f0;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.controls-section {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Download button styling */
+.download-btn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: background-color 0.2s;
+  font-weight: 500;
+}
+
+.download-btn:hover {
+  background-color: #388e3c;
+}
+
+.download-btn.disabled {
+  background-color: #9e9e9e;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Hide download button from print output */
+@media print {
+  .download-btn {
+    display: none;
+  }
+}
+
+/* Animation for generating state */
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.download-btn.disabled {
+  animation: pulse 1.5s infinite;
+}
+
+/* Make sure we have enough space for the download button */
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .controls-section {
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+}

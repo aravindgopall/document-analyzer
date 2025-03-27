@@ -16,7 +16,7 @@ export async function analyzeDocumentWithAzureOpenAI(
     !AZURE_OPENAI_VERSION
   ) {
     console.error(
-      "Missing Azure OpenAI configuration. Please set all required environment variables.",
+      "Missing Azure OpenAI configuration. Please set all required environment variables."
     );
     throw "missing openai config";
   }
@@ -28,13 +28,26 @@ export async function analyzeDocumentWithAzureOpenAI(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "api-key": AZURE_OPENAI_KEY, // Type assertion removed for simplicity
+          "api-key": AZURE_OPENAI_KEY,
         },
         body: JSON.stringify({
           messages: [
             {
               role: "system",
-              content: `You are an AI assistant that analyzes documents for potential risks. Identify statements that could represent legal, financial, or operational risks. For each risk, provide the statement, risk factor, severity (Low, Medium, High), and a suggestion for improvement. Return your response as a JSON object with a "risks" array containing objects with "statement", "factor", "severity", and "suggestion", "clause" fields. Please consider the below JSON as rules in doing this task: 
+              content: `You are an AI assistant that analyzes documents for potential risks. Identify statements that could represent legal, financial, or operational risks. For each risk, provide the statement, risk factor, severity (Low, Medium, High), and a suggestion for improvement. 
+
+Also identify which specific clause section from the rules provided is related to each risk, and provide a suggested rewrite of the problematic statement.
+
+Return your response as a JSON object with a "risks" array containing objects with the following fields:
+- "statement": the problematic text from the document
+- "factor": description of the risk 
+- "severity": "Low", "Medium", or "High"
+- "suggestion": general suggestion for improvement
+- "clause": the number of the relevant clause from the rules (e.g., "5" or "13")
+- "clauseSection": the title of that clause section (e.g., "Termination" or "Obligations of Recipient")
+- "rewrite": a specific rewrite of the problematic statement that addresses the risk which should be a complete replacement of the problematic text from the document (statement field in the output)
+
+Please consider the below JSON as rules in doing this task: 
 \`\`\`json
 {
   "title": "Mutual Non Disclosure Agreement",
@@ -75,7 +88,7 @@ export async function analyzeDocumentWithAzureOpenAI(
     {
       "sNo": "3",
       "clauseSection": "general exceptions",
-      "necessaryInclusions": "The confidentiality obligations shall not apply to Confidential Information which:  \\na. was in the public domain or generally available to the public prior to receipt thereof by Receiving Party from the Disclosing Party, or which subsequently becomes part of the public domain or generally available to the public through no act, fault, breach or omission on the part of the Receiving Party; \\nb. was in the possession of Receiving Party prior to receipt from the Disclosing Party;\\nc. is  later  lawfully  received  by  Receiving  Party  from  a  third  party  without any confidentiality restrictions applicable; \\nd. is  independently  created  or  developed  by  the  Receiving  Party  without use  or  reference  of the Confidential Information of the Disclosing Party; or,\\ne. is required to be disclosed by operation of applicable law.",
+      "necessaryInclusions": "The confidentiality obligations shall not apply to Confidential Information which:  \\na. was in the public domain or generally available to the public prior to receipt thereof by Receiving Party from the Disclosing Party, or which subsequently becomes part of the public domain or generally available to the public through no act, fault, breach or omission on the part of the Receiving Party; \\nb. was in the possession of Receiving Party prior to receipt from the Disclosing Party;\\nc. is  later  lawfully  received  by  Receiving  Party  from  a  third  party  without any confidentiality restrictions applicable; \\nd. is  independently  created  or  developed  by  the  Receiving  Party  without use  or  reference  of the Confidential Information of the Disclosing Party; or,\\ne. is required to be disclosed by operation of applicable law.",
       "riskFactors": {
         "low": "",
         "moderate": "Does not contain any of the exclusions provided under the necessary inclusions",
@@ -103,7 +116,7 @@ export async function analyzeDocumentWithAzureOpenAI(
         "moderate": "Absence of a degree of care similar to what the recipient party uses to protect its own proprietary information",
         "high": "Contains the following clauses: non-solicitation clause; non-circumvention clause; Indemnity obligations"
       },
-      "suggestions": "Suggest removing non-solication clause and non-circumvention clause, if identified. As the purpose of the NDA is only for initial discussions to enter into a potential business arrangement, a non-solication clause or non-circumvention clause is not necessary and restrictive in this initial stage."
+      "suggestions": "Suggest removing non-solication clause and non-circumvention clause, if identified. As the purpose of the NDA is only for initial discussions to enter into a potential business arrangement, a non-solication clause or non-circumvention clause is not necessary and restrictive at this initial stage."
     },
     {
       "sNo": "6",
@@ -228,7 +241,7 @@ export async function analyzeDocumentWithAzureOpenAI(
     }
   ]
 }
-\`\`\``,
+\`\`\``
             },
             {
               role: "user",
@@ -239,15 +252,24 @@ export async function analyzeDocumentWithAzureOpenAI(
           temperature: 0.3,
           max_tokens: 4096,
         }),
-      },
+      }
     );
 
     const data = await response.json();
     console.log(JSON.stringify(data));
 
     try {
-      const risksData = JSON.parse(data.choices[0].message.content);
-      return risksData;
+      const risksData : RiskAnalysis = JSON.parse(data.choices[0].message.content);
+      
+      // Make sure all risks have a rewrite field
+      if (risksData.risks) {
+        risksData.risks = risksData.risks.map(risk => ({
+          ...risk,
+          rewrite: risk.rewrite || `${risk.statement} [suggested revision needed]`
+        }));
+      }
+      
+      return risksData; // This should be a properly formatted RiskAnalysis object
     } catch (error) {
       console.error("Error parsing Azure OpenAI response:", error);
       throw error;
