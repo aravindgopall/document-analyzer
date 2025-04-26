@@ -4,9 +4,9 @@ export async function analyzeDocumentWithAzureOpenAI(
   documentText: string,
 ): Promise<RiskAnalysis> {
   const AZURE_OPENAI_ENDPOINT = process.env.NEXT_AZURE_OPENAI_ENDPOINT;
-  const AZURE_OPENAI_KEY = process.env.NEXT_AZURE_OPENAI_KEY;
+  const AZURE_OPENAI_KEY = process.env.NEXT_AZURE_OPENAI_API_KEY;
   const AZURE_OPENAI_DEPLOYMENT = process.env.NEXT_AZURE_OPENAI_DEPLOYMENT;
-  const AZURE_OPENAI_VERSION = process.env.NEXT_AZURE_OPENAI_VERSION;
+  const AZURE_OPENAI_VERSION = process.env.NEXT_AZURE_OPENAI_API_VERSION;
 
   // Check if all required environment variables are defined
   if (
@@ -16,7 +16,7 @@ export async function analyzeDocumentWithAzureOpenAI(
     !AZURE_OPENAI_VERSION
   ) {
     console.error(
-      "Missing Azure OpenAI configuration. Please set all required environment variables."
+      "Missing Azure OpenAI configuration. Please set all required environment variables.",
     );
     throw "missing openai config";
   }
@@ -241,7 +241,7 @@ Please consider the below JSON as rules in doing this task:
     }
   ]
 }
-\`\`\``
+\`\`\``,
             },
             {
               role: "user",
@@ -252,23 +252,26 @@ Please consider the below JSON as rules in doing this task:
           temperature: 0.3,
           max_tokens: 4096,
         }),
-      }
+      },
     );
 
     const data = await response.json();
     console.log(JSON.stringify(data));
 
     try {
-      const risksData : RiskAnalysis = JSON.parse(data.choices[0].message.content);
-      
+      const risksData: RiskAnalysis = JSON.parse(
+        data.choices[0].message.content,
+      );
+
       // Make sure all risks have a rewrite field
       if (risksData.risks) {
-        risksData.risks = risksData.risks.map(risk => ({
+        risksData.risks = risksData.risks.map((risk) => ({
           ...risk,
-          rewrite: risk.rewrite || `${risk.statement} [suggested revision needed]`
+          rewrite:
+            risk.rewrite || `${risk.statement} [suggested revision needed]`,
         }));
       }
-      
+
       return risksData; // This should be a properly formatted RiskAnalysis object
     } catch (error) {
       console.error("Error parsing Azure OpenAI response:", error);
